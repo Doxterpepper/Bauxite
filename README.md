@@ -1,2 +1,2 @@
 # Bauxite
-Print boxes to the terminal
+Wrap console IO in boxes
