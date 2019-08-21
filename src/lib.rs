@@ -13,8 +13,8 @@ pub enum Alignment {
 }
 
 struct Formatting {
-    pub padding: usize,
-    pub alignment: Alignment,
+    padding: usize,
+    alignment: Alignment,
 }
 
 pub struct Bauxite {
