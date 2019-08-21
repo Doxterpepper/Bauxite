@@ -9,8 +9,8 @@
 //! id est laborum.";
 //!
 //! let message = String::from(lorem_ipsum);
-//! let boxed_message = bauxite::Box(message).padding(3)
-//!     .alignment(Alignment::Left);
+//! let boxed_message = bauxite::Box::new(message).padding(3)
+//!     .alignment(bauxite::Alignment::Left);
 //! println!("{}", boxed_message);
 //! ```
 use std::fmt;
@@ -105,7 +105,6 @@ impl Box {
 
     /// Boxed message to string
     pub fn to_string(&self) -> String {
-        let max_length = max_line_length(&self.message);
         let format = &self.format;
         let top_padding = format.padding_top.unwrap_or(format.padding / 2);
         let bottom_padding = format.padding_bottom.unwrap_or(format.padding / 2);
@@ -113,11 +112,14 @@ impl Box {
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
 
-        let mut boxed_message = gen_top(max_length + right_padding + left_padding);
-        boxed_message += &gen_vertical_padding(top_padding, max_length + total_horizontal_pad);
-        boxed_message += &wrap_lines(&self.message, &format, max_length);
-        boxed_message += &gen_vertical_padding(bottom_padding, max_length + right_padding + left_padding);
-        boxed_message += &gen_bottom(max_length + left_padding + right_padding);
+        let normalized_message = normalize_lines(&self.message, self.format.max_width, total_horizontal_pad);
+        let max_line_length = max_line_length(&normalized_message);
+
+        let mut boxed_message = gen_top(max_line_length + right_padding + left_padding);
+        boxed_message += &gen_vertical_padding(top_padding, max_line_length + total_horizontal_pad);
+        boxed_message += &wrap_lines(&normalized_message, &format, max_line_length);
+        boxed_message += &gen_vertical_padding(bottom_padding, max_line_length + right_padding + left_padding);
+        boxed_message += &gen_bottom(max_line_length + left_padding + right_padding);
         boxed_message
     }
 }
@@ -126,6 +128,27 @@ impl fmt::Display for Box {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_fmt(format_args!("{}", self.to_string()))
     }
+}
+
+fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String{
+    let mut normalized_message = String::new();
+    let mut message_lines = message.lines();
+    let mut current = message_lines.next();
+
+    while let Some(line) = current {
+        if line.len() > max_width {
+            let (line1, line2) = line.split_at(max_width - padding);
+            normalized_message += line1;
+            normalized_message += "\n";
+            current = Some(line2);
+        } else {
+            normalized_message += line;
+            normalized_message += "\n";
+            current = message_lines.next();
+        }
+    }
+
+    normalized_message
 }
 
 /// Helper function to build the top of the box
@@ -196,6 +219,15 @@ fn gen_whitespace(num: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_nomralize_lines() {
+        let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        let expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempo\nr incididunt ut labore et dolore magna aliqua.\n";
+
+        let normalized = normalize_lines(&String::from(message), 80, 3);
+        assert_eq!(expected, normalized);
+    }
 
     #[test]
     fn test_vertical_padding() {
