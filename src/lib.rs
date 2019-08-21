@@ -60,7 +60,7 @@ impl Bauxite {
 
 fn gen_top(length: usize) -> String {
     let mut top = String::from(TOP_LEFT);
-    top += &(0..length).map(|_| { HORIZONTAL }).collect::<String>();
+    top += &(0..length).map(|_| HORIZONTAL).collect::<String>();
     top += TOP_RIGHT;
     top += "\n";
     top
@@ -68,7 +68,7 @@ fn gen_top(length: usize) -> String {
 
 fn gen_bottom(length: usize) -> String {
     let mut bottom = String::from(BOTTOM_LEFT);
-    bottom += &(0..length).map(|_| { HORIZONTAL }).collect::<String>();
+    bottom += &(0..length).map(|_| HORIZONTAL).collect::<String>();
     bottom += BOTTOM_RIGHT;
     bottom += "\n";
     bottom
@@ -106,7 +106,7 @@ fn max_line_length(message: &String) -> usize {
 }
 
 fn gen_whitespace(num: usize) -> String {
-    (0..num).map(|_| { " " }).collect::<String>()
+    (0..num).map(|_| " ").collect::<String>()
 }
 
 #[cfg(test)]
@@ -115,8 +115,7 @@ mod tests {
 
     #[test]
     fn test_basic_box() {
-        let expected = 
-"┌────────────┐
+        let expected = "┌────────────┐
 │  whatever  │
 │  whatever  │
 └────────────┘\n";
@@ -126,8 +125,7 @@ mod tests {
 
     #[test]
     fn test_left_align() {
-        let expected = 
-"┌──────────────────────────────────────────────────────────────────────┐
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐
 │  Lorem ipsum dolor sit amet,                                         │
 │  consectetur adipiscing elit,                                        │
 │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
@@ -139,15 +137,13 @@ mod tests {
 
     #[test]
     fn test_right_align() {
-        let expected = 
-"┌──────────────────────────────────────────────────────────────────────┐
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐
 │                                         Lorem ipsum dolor sit amet,  │
 │                                        consectetur adipiscing elit,  │
 │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
 └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let boxed_content = Bauxite::new(String::from(message))
-            .alignment(Alignment::Right);
+        let boxed_content = Bauxite::new(String::from(message)).alignment(Alignment::Right);
         assert_eq!(expected, boxed_content.to_string());
     }
 }
