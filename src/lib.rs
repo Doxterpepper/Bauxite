@@ -87,8 +87,8 @@ impl Bauxite {
     pub fn to_string(self) -> String {
         let max_length = max_line_length(&self.message);
         let format = self.format;
-        let top_padding = format.padding_top.unwrap_or(format.padding);
-        let bottom_padding = format.padding_bottom.unwrap_or(format.padding);
+        let top_padding = format.padding_top.unwrap_or(format.padding / 2);
+        let bottom_padding = format.padding_bottom.unwrap_or(format.padding / 2);
         let right_padding = format.padding_right.unwrap_or(format.padding);
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
@@ -174,10 +174,8 @@ mod tests {
     fn test_basic_box() {
         let expected = "┌────────────┐
 │            │
-│            │
 │  whatever  │
 │  whatever  │
-│            │
 │            │
 └────────────┘\n";
         let boxed_content = Bauxite::new(String::from("whatever\nwhatever"));
@@ -188,11 +186,9 @@ mod tests {
     fn test_left_align() {
         let expected = "┌──────────────────────────────────────────────────────────────────────┐
 │                                                                      │
-│                                                                      │
 │  Lorem ipsum dolor sit amet,                                         │
 │  consectetur adipiscing elit,                                        │
 │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
-│                                                                      │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
@@ -204,11 +200,9 @@ mod tests {
     fn test_right_align() {
         let expected = "┌──────────────────────────────────────────────────────────────────────┐
 │                                                                      │
-│                                                                      │
 │                                         Lorem ipsum dolor sit amet,  │
 │                                        consectetur adipiscing elit,  │
 │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
-│                                                                      │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
