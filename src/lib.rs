@@ -1,12 +1,7 @@
 use std::fmt;
 use std::cmp::max;
 
-const VERTICAL: &'static str = "│";
-const HORIZONTAL: &'static str = "─";
-const TOP_LEFT: &'static str = "┌";
-const TOP_RIGHT: &'static str = "┐";
-const BOTTOM_LEFT: &'static str = "└";
-const BOTTOM_RIGHT: &'static str = "┘";
+mod lines;
 
 pub enum Alignment {
     Left,
@@ -120,25 +115,25 @@ impl fmt::Display for Box {
 
 /// Helper function to build the top of the box
 fn gen_top(length: usize) -> String {
-    let mut top = String::from(TOP_LEFT);
-    top += &(0..length).map(|_| HORIZONTAL).collect::<String>();
-    top += TOP_RIGHT;
+    let mut top = String::from(lines::TOP_LEFT);
+    top += &(0..length).map(|_| lines::HORIZONTAL).collect::<String>();
+    top += lines::TOP_RIGHT;
     top += "\n";
     top
 }
 
 /// Helper function to build the bottom of the box
 fn gen_bottom(length: usize) -> String {
-    let mut bottom = String::from(BOTTOM_LEFT);
-    bottom += &(0..length).map(|_| HORIZONTAL).collect::<String>();
-    bottom += BOTTOM_RIGHT;
+    let mut bottom = String::from(lines::BOTTOM_LEFT);
+    bottom += &(0..length).map(|_| lines::HORIZONTAL).collect::<String>();
+    bottom += lines::BOTTOM_RIGHT;
     bottom += "\n";
     bottom
 }
 
 /// Helper function to to_string top and bottom padding of the box
 fn gen_vertical_padding(pad: usize, length: usize) -> String {
-    (0..pad).map(|_| format!("{}{}{}\n", VERTICAL, gen_whitespace(length), VERTICAL))
+    (0..pad).map(|_| format!("{}{}{}\n", lines::VERTICAL, gen_whitespace(length), lines::VERTICAL))
         .collect::<String>()
 }
 
@@ -165,7 +160,7 @@ fn wrap_lines(message: &String, format: &Formatting, max_length: usize) -> Strin
     message.lines().map(|line| {
         let left_padding = gen_left_padding(format, line.len(), &max_length);
         let right_padding = gen_right_padding(format, line.len(), &max_length);
-        format!("{}{}{}{}{}\n", VERTICAL, left_padding, line, right_padding, VERTICAL)
+        format!("{}{}{}{}{}\n", lines::VERTICAL, left_padding, line, right_padding, lines::VERTICAL)
     }).collect::<String>()
 }
 
