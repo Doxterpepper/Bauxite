@@ -22,7 +22,7 @@ struct Formatting {
     padding_bottom: Option<usize>,
 }
 
-pub struct Bauxite {
+pub struct Box {
     message: String,
     format: Formatting,
 }
@@ -41,49 +41,58 @@ impl Formatting {
     }
 }
 
-impl Bauxite {
-    pub fn new(message: String) -> Bauxite {
-        Bauxite {
+impl Box {
+    /// Create a new boxed message
+    pub fn new(message: String) -> Box {
+        Box {
             message: message,
             format: Formatting::new(),
         }
     }
 
+    /// Set the global padding on the box
     pub fn padding(mut self, pad: usize) -> Self {
         self.format.padding = pad;
         self
     }
 
+    /// Set the alignment of the content
     pub fn alignment(mut self, align: Alignment) -> Self {
         self.format.alignment = align;
         self
     }
 
+    /// Set the maximum width of the box before lines should wrap
     pub fn max_width(mut self, width: usize) -> Self {
         self.format.max_width = width;
         self
     }
 
+    /// Set the padding on the bottom, overrides the global bottom padding
     pub fn padding_bottom(mut self, pad: usize) -> Self {
         self.format.padding_bottom = Some(pad);
         self
     }
 
+    /// Set the padding on the top, overrides the global top padding
     pub fn padding_top(mut self, pad: usize) -> Self {
         self.format.padding_top = Some(pad);
         self
     }
 
+    /// Set the padding on the left, overrides the global left padding
     pub fn padding_left(mut self, pad: usize) -> Self {
         self.format.padding_left = Some(pad);
         self
     }
 
+    /// Set the padding on the right, overrides the global right padding
     pub fn padding_right(mut self, pad: usize) -> Self {
         self.format.padding_right = Some(pad);
         self
     }
 
+    /// Boxed message to string
     pub fn to_string(self) -> String {
         let max_length = max_line_length(&self.message);
         let format = self.format;
@@ -102,6 +111,7 @@ impl Bauxite {
     }
 }
 
+/// Helper function to build the top of the box
 fn gen_top(length: usize) -> String {
     let mut top = String::from(TOP_LEFT);
     top += &(0..length).map(|_| HORIZONTAL).collect::<String>();
@@ -110,6 +120,7 @@ fn gen_top(length: usize) -> String {
     top
 }
 
+/// Helper function to build the bottom of the box
 fn gen_bottom(length: usize) -> String {
     let mut bottom = String::from(BOTTOM_LEFT);
     bottom += &(0..length).map(|_| HORIZONTAL).collect::<String>();
@@ -118,11 +129,13 @@ fn gen_bottom(length: usize) -> String {
     bottom
 }
 
+/// Helper function to generate top and bottom padding of the box
 fn gen_vertical_padding(pad: usize, length: usize) -> String {
     (0..pad).map(|_| format!("{}{}{}\n", VERTICAL, gen_whitespace(length), VERTICAL))
         .collect::<String>()
 }
 
+/// Helper function to generate padding left of the content
 fn gen_left_padding(format: &Formatting, line_length: usize, max_length: &usize) -> String {
     let padding = match format.alignment {
         Alignment::Left => format.padding,
@@ -131,6 +144,7 @@ fn gen_left_padding(format: &Formatting, line_length: usize, max_length: &usize)
     gen_whitespace(padding)
 }
 
+/// Helper function to generate padding right of the content
 fn gen_right_padding(format: &Formatting, line_length: usize, max_length: &usize) -> String {
     let padding = match format.alignment {
         Alignment::Right => format.padding,
@@ -139,6 +153,7 @@ fn gen_right_padding(format: &Formatting, line_length: usize, max_length: &usize
     gen_whitespace(padding)
 }
 
+/// Wrap the message with the box on it's left and right
 fn wrap_lines(message: String, format: &Formatting, max_length: usize) -> String {
     message.lines().map(|line| {
         let left_padding = gen_left_padding(format, line.len(), &max_length);
@@ -147,6 +162,7 @@ fn wrap_lines(message: String, format: &Formatting, max_length: usize) -> String
     }).collect::<String>()
 }
 
+/// Helper function to get the length of the longest line
 fn max_line_length(message: &String) -> usize {
     let mut max_length = 0;
     for line in message.lines() {
@@ -155,6 +171,7 @@ fn max_line_length(message: &String) -> usize {
     max_length
 }
 
+/// Helper function to generate whitespace for padding
 fn gen_whitespace(num: usize) -> String {
     (0..num).map(|_| " ").collect::<String>()
 }
@@ -178,7 +195,7 @@ mod tests {
 │  whatever  │
 │            │
 └────────────┘\n";
-        let boxed_content = Bauxite::new(String::from("whatever\nwhatever"));
+        let boxed_content = Box::new(String::from("whatever\nwhatever"));
         assert_eq!(expected, boxed_content.to_string());
     }
 
@@ -192,7 +209,7 @@ mod tests {
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let boxed_content = Bauxite::new(String::from(message)).alignment(Alignment::Left);
+        let boxed_content = Box::new(String::from(message)).alignment(Alignment::Left);
         assert_eq!(expected, boxed_content.to_string());
     }
 
@@ -206,7 +223,7 @@ mod tests {
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let boxed_content = Bauxite::new(String::from(message)).alignment(Alignment::Right);
+        let boxed_content = Box::new(String::from(message)).alignment(Alignment::Right);
         assert_eq!(expected, boxed_content.to_string());
     }
 }
