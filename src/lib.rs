@@ -1,3 +1,4 @@
+use std::fmt;
 use std::cmp::max;
 
 const VERTICAL: &'static str = "│";
@@ -93,9 +94,9 @@ impl Box {
     }
 
     /// Boxed message to string
-    pub fn to_string(self) -> String {
+    pub fn to_string(&self) -> String {
         let max_length = max_line_length(&self.message);
-        let format = self.format;
+        let format = &self.format;
         let top_padding = format.padding_top.unwrap_or(format.padding / 2);
         let bottom_padding = format.padding_bottom.unwrap_or(format.padding / 2);
         let right_padding = format.padding_right.unwrap_or(format.padding);
@@ -104,10 +105,16 @@ impl Box {
 
         let mut boxed_message = gen_top(max_length + right_padding + left_padding);
         boxed_message += &gen_vertical_padding(top_padding, max_length + total_horizontal_pad);
-        boxed_message += &wrap_lines(self.message, &format, max_length);
+        boxed_message += &wrap_lines(&self.message, &format, max_length);
         boxed_message += &gen_vertical_padding(bottom_padding, max_length + right_padding + left_padding);
         boxed_message += &gen_bottom(max_length + left_padding + right_padding);
         boxed_message
+    }
+}
+
+impl fmt::Display for Box {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_fmt(format_args!("{}", self.to_string()))
     }
 }
 
@@ -129,13 +136,13 @@ fn gen_bottom(length: usize) -> String {
     bottom
 }
 
-/// Helper function to generate top and bottom padding of the box
+/// Helper function to to_string top and bottom padding of the box
 fn gen_vertical_padding(pad: usize, length: usize) -> String {
     (0..pad).map(|_| format!("{}{}{}\n", VERTICAL, gen_whitespace(length), VERTICAL))
         .collect::<String>()
 }
 
-/// Helper function to generate padding left of the content
+/// Helper function to to_string padding left of the content
 fn gen_left_padding(format: &Formatting, line_length: usize, max_length: &usize) -> String {
     let padding = match format.alignment {
         Alignment::Left => format.padding,
@@ -144,7 +151,7 @@ fn gen_left_padding(format: &Formatting, line_length: usize, max_length: &usize)
     gen_whitespace(padding)
 }
 
-/// Helper function to generate padding right of the content
+/// Helper function to to_string padding right of the content
 fn gen_right_padding(format: &Formatting, line_length: usize, max_length: &usize) -> String {
     let padding = match format.alignment {
         Alignment::Right => format.padding,
@@ -154,7 +161,7 @@ fn gen_right_padding(format: &Formatting, line_length: usize, max_length: &usize
 }
 
 /// Wrap the message with the box on it's left and right
-fn wrap_lines(message: String, format: &Formatting, max_length: usize) -> String {
+fn wrap_lines(message: &String, format: &Formatting, max_length: usize) -> String {
     message.lines().map(|line| {
         let left_padding = gen_left_padding(format, line.len(), &max_length);
         let right_padding = gen_right_padding(format, line.len(), &max_length);
@@ -171,7 +178,7 @@ fn max_line_length(message: &String) -> usize {
     max_length
 }
 
-/// Helper function to generate whitespace for padding
+/// Helper function to to_string whitespace for padding
 fn gen_whitespace(num: usize) -> String {
     (0..num).map(|_| " ").collect::<String>()
 }
