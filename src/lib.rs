@@ -238,25 +238,25 @@ mod tests {
 
     #[test]
     fn test_basic_box() {
-        let expected = "┌────────────┐
-│            │
-│  whatever  │
-│  whatever  │
-│            │
-└────────────┘\n";
+        let expected = "┌────────────┐\n\
+                        │            │\n\
+                        │  whatever  │\n\
+                        │  whatever  │\n\
+                        │            │\n\
+                        └────────────┘\n";
         let boxed_content = Box::new(String::from("whatever\nwhatever"));
         assert_eq!(expected, boxed_content.to_string());
     }
 
     #[test]
     fn test_left_align() {
-        let expected = "┌──────────────────────────────────────────────────────────────────────┐
-│                                                                      │
-│  Lorem ipsum dolor sit amet,                                         │
-│  consectetur adipiscing elit,                                        │
-│  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘\n";
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐\n\
+                        │                                                                      │\n\
+                        │  Lorem ipsum dolor sit amet,                                         │\n\
+                        │  consectetur adipiscing elit,                                        │\n\
+                        │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+                        │                                                                      │\n\
+                        └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
         let boxed_content = Box::new(String::from(message)).alignment(Alignment::Left);
         assert_eq!(expected, boxed_content.to_string());
@@ -264,13 +264,13 @@ mod tests {
 
     #[test]
     fn test_right_align() {
-        let expected = "┌──────────────────────────────────────────────────────────────────────┐
-│                                                                      │
-│                                         Lorem ipsum dolor sit amet,  │
-│                                        consectetur adipiscing elit,  │
-│  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘\n";
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐\n\
+                        │                                                                      │\n\
+                        │                                         Lorem ipsum dolor sit amet,  │\n\
+                        │                                        consectetur adipiscing elit,  │\n\
+                        │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+                        │                                                                      │\n\
+                        └──────────────────────────────────────────────────────────────────────┘\n";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
         let boxed_content = Box::new(String::from(message)).alignment(Alignment::Right);
         assert_eq!(expected, boxed_content.to_string());
