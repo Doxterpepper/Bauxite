@@ -13,8 +13,8 @@
 //! println!("{}", boxed_message);
 //! ```
 
-use std::fmt;
 use std::cmp::max;
+use std::fmt;
 
 mod lines;
 
@@ -119,13 +119,17 @@ impl BoxBuilder {
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
 
-        let normalized_message = normalize_lines(&self.message, self.format.max_width, total_horizontal_pad);
+        let normalized_message =
+            normalize_lines(&self.message, self.format.max_width, total_horizontal_pad);
         let max_line_length = max_line_length(&normalized_message);
 
         let mut boxed_message = gen_top(max_line_length + right_padding + left_padding);
         boxed_message += &gen_vertical_padding(top_padding, max_line_length + total_horizontal_pad);
         boxed_message += &wrap_lines(&normalized_message, &format, max_line_length);
-        boxed_message += &gen_vertical_padding(bottom_padding, max_line_length + right_padding + left_padding);
+        boxed_message += &gen_vertical_padding(
+            bottom_padding,
+            max_line_length + right_padding + left_padding,
+        );
         boxed_message += &gen_bottom(max_line_length + left_padding + right_padding);
         boxed_message
     }
@@ -137,7 +141,7 @@ impl fmt::Display for BoxBuilder {
     }
 }
 
-fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String{
+fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String {
     let mut normalized_message = String::new();
     let mut message_lines = message.lines();
     let mut current = message_lines.next();
@@ -179,7 +183,15 @@ fn gen_bottom(length: usize) -> String {
 
 /// Helper function to to_string top and bottom padding of the box
 fn gen_vertical_padding(pad: usize, length: usize) -> String {
-    (0..pad).map(|_| format!("{}{}{}\n", lines::VERTICAL, gen_whitespace(length), lines::VERTICAL))
+    (0..pad)
+        .map(|_| {
+            format!(
+                "{}{}{}\n",
+                lines::VERTICAL,
+                gen_whitespace(length),
+                lines::VERTICAL
+            )
+        })
         .collect::<String>()
 }
 
@@ -203,11 +215,21 @@ fn gen_right_padding(format: &Formatting, line_length: usize, max_length: &usize
 
 /// Wrap the message with the box on it's left and right
 fn wrap_lines(message: &String, format: &Formatting, max_length: usize) -> String {
-    message.lines().map(|line| {
-        let left_padding = gen_left_padding(format, line.len(), &max_length);
-        let right_padding = gen_right_padding(format, line.len(), &max_length);
-        format!("{}{}{}{}{}\n", lines::VERTICAL, left_padding, line, right_padding, lines::VERTICAL)
-    }).collect::<String>()
+    message
+        .lines()
+        .map(|line| {
+            let left_padding = gen_left_padding(format, line.len(), &max_length);
+            let right_padding = gen_right_padding(format, line.len(), &max_length);
+            format!(
+                "{}{}{}{}{}\n",
+                lines::VERTICAL,
+                left_padding,
+                line,
+                right_padding,
+                lines::VERTICAL
+            )
+        })
+        .collect::<String>()
 }
 
 /// Helper function to get the length of the longest line
@@ -346,6 +368,5 @@ mod tests {
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
         let boxed_content = BoxBuilder::from(message).alignment(Alignment::Left);
         assert_eq!(expected, format!("{}", boxed_content));
-
     }
 }

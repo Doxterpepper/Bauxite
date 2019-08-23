@@ -1,4 +1,3 @@
-
 pub const VERTICAL: &'static str = "│";
 pub const HORIZONTAL: &'static str = "─";
 pub const TOP_LEFT: &'static str = "┌";
