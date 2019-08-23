@@ -1,7 +1,6 @@
-# Bauxite
-Wrap a string in a box for more aesthetic output to a console
+# Bauxite [![Build Status](https://travis-ci.org/Doxterpepper/Bauxite.svg?branch=master)](https://travis-ci.org/Doxterpepper/Bauxite)
 
-[![Build Status](https://travis-ci.org/Doxterpepper/Bauxite.svg?branch=master)](https://travis-ci.org/Doxterpepper/Bauxite)
+Wrap a string in a box for more aesthetic output to a console
 
 # Usage
 To use Bauxite add `bauxite` as a dependency in your `Cargo.toml`.
@@ -21,13 +20,4 @@ fn main() {
     println!("{}", bauxite::BoxBuilder::new(String::from(my_message)));
 }
 ```
-
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                                                                          │
-│  Only those who leisurely approach that which the masses are busy about  │
-│  can be busy about that which the masses take leisurely.                 │
-│  -- Lao Tsu                                                              │
-│                                                                          │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+![alt text](https://github.com/Doxterpepper/Bauxite/blob/readme/Screenshot.png "Boxed message")
