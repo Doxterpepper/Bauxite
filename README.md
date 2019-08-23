@@ -17,7 +17,7 @@ fn main() {
     let my_message = "Only those who leisurely approach that which the masses are busy about\n\
                       can be busy about that which the masses take leisurely.\n\
                       -- Lao Tsu";
-    println!("{}", bauxite::BoxBuilder::new(String::from(my_message)));
+    println!("{}", bauxite::BoxBuilder::from(my_message);
 }
 ```
 ![alt text](https://github.com/Doxterpepper/Bauxite/blob/readme/Screenshot.png "Boxed message")

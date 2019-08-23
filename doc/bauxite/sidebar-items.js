@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Alignment",""]],"struct":[["Box",""]]});
+initSidebarItems({"enum":[["Alignment",""]],"struct":[["BoxBuilder",""]]});

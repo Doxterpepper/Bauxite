@@ -8,8 +8,7 @@
 //! Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
 //! id est laborum.";
 //!
-//! let message = String::from(lorem_ipsum);
-//! let boxed_message = bauxite::BoxBuilder::new(message).padding(3)
+//! let boxed_message = bauxite::BoxBuilder::from(lorem_ipsum).padding(3)
 //!     .alignment(bauxite::Alignment::Left);
 //! println!("{}", boxed_message);
 //! ```
@@ -58,6 +57,13 @@ impl BoxBuilder {
     pub fn new(message: String) -> BoxBuilder {
         BoxBuilder {
             message: message,
+            format: Formatting::new(),
+        }
+    }
+
+    pub fn from(message: &str) -> BoxBuilder {
+        BoxBuilder {
+            message: String::from(message),
             format: Formatting::new(),
         }
     }
@@ -326,5 +332,20 @@ mod tests {
         let message = "		";
         let boxed_content = BoxBuilder::new(String::from(message));
         assert_eq!(expected, boxed_content.to_string());
+    }
+
+    #[test]
+    fn test_from() {
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐\n\
+                        │                                                                      │\n\
+                        │  Lorem ipsum dolor sit amet,                                         │\n\
+                        │  consectetur adipiscing elit,                                        │\n\
+                        │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+                        │                                                                      │\n\
+                        └──────────────────────────────────────────────────────────────────────┘";
+        let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        let boxed_content = BoxBuilder::from(message).alignment(Alignment::Left);
+        assert_eq!(expected, format!("{}", boxed_content));
+
     }
 }
