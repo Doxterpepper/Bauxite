@@ -149,7 +149,9 @@ fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String
         }
     }
 
-    normalized_message
+    // Bauxite doesn't handle the tab character very well so
+    // replace all tab characters with a single space.
+    normalized_message.replace("\t", " ")
 }
 
 /// Helper function to build the top of the box
@@ -310,6 +312,18 @@ mod tests {
                         │                                                                              │\n\
                         └──────────────────────────────────────────────────────────────────────────────┘";
         let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        let boxed_content = BoxBuilder::new(String::from(message));
+        assert_eq!(expected, boxed_content.to_string());
+    }
+
+    #[test]
+    fn handle_tab_character() {
+        let expected = "┌──────┐\n\
+                        │      │\n\
+                        │      │\n\
+                        │      │\n\
+                        └──────┘";
+        let message = "		";
         let boxed_content = BoxBuilder::new(String::from(message));
         assert_eq!(expected, boxed_content.to_string());
     }
