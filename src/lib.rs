@@ -9,10 +9,11 @@
 //! id est laborum.";
 //!
 //! let message = String::from(lorem_ipsum);
-//! let boxed_message = bauxite::Box::new(message).padding(3)
+//! let boxed_message = bauxite::BoxBuilder::new(message).padding(3)
 //!     .alignment(bauxite::Alignment::Left);
 //! println!("{}", boxed_message);
 //! ```
+
 use std::fmt;
 use std::cmp::max;
 
@@ -33,7 +34,7 @@ struct Formatting {
     padding_bottom: Option<usize>,
 }
 
-pub struct Box {
+pub struct BoxBuilder {
     message: String,
     format: Formatting,
 }
@@ -52,10 +53,10 @@ impl Formatting {
     }
 }
 
-impl Box {
+impl BoxBuilder {
     /// Create a new boxed message
-    pub fn new(message: String) -> Box {
-        Box {
+    pub fn new(message: String) -> BoxBuilder {
+        BoxBuilder {
             message: message,
             format: Formatting::new(),
         }
@@ -103,7 +104,7 @@ impl Box {
         self
     }
 
-    /// Boxed message to string
+    /// BoxBuildered message to string
     pub fn to_string(&self) -> String {
         let format = &self.format;
         let top_padding = format.padding_top.unwrap_or(format.padding / 2);
@@ -124,7 +125,7 @@ impl Box {
     }
 }
 
-impl fmt::Display for Box {
+impl fmt::Display for BoxBuilder {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_fmt(format_args!("{}", self.to_string()))
     }
@@ -137,7 +138,7 @@ fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String
 
     while let Some(line) = current {
         if line.len() > max_width {
-            let (line1, line2) = line.split_at(max_width - padding);
+            let (line1, line2) = line.split_at(max_width - padding - 2);
             normalized_message += line1;
             normalized_message += "\n";
             current = Some(line2);
@@ -165,7 +166,6 @@ fn gen_bottom(length: usize) -> String {
     let mut bottom = String::from(lines::BOTTOM_LEFT);
     bottom += &(0..length).map(|_| lines::HORIZONTAL).collect::<String>();
     bottom += lines::BOTTOM_RIGHT;
-    bottom += "\n";
     bottom
 }
 
@@ -223,7 +223,7 @@ mod tests {
     #[test]
     fn test_nomralize_lines() {
         let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempo\nr incididunt ut labore et dolore magna aliqua.\n";
+        let expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tem\npor incididunt ut labore et dolore magna aliqua.\n";
 
         let normalized = normalize_lines(&String::from(message), 80, 3);
         assert_eq!(expected, normalized);
@@ -243,8 +243,8 @@ mod tests {
                         │  whatever  │\n\
                         │  whatever  │\n\
                         │            │\n\
-                        └────────────┘\n";
-        let boxed_content = Box::new(String::from("whatever\nwhatever"));
+                        └────────────┘";
+        let boxed_content = BoxBuilder::new(String::from("whatever\nwhatever"));
         assert_eq!(expected, boxed_content.to_string());
     }
 
@@ -256,9 +256,9 @@ mod tests {
                         │  consectetur adipiscing elit,                                        │\n\
                         │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
                         │                                                                      │\n\
-                        └──────────────────────────────────────────────────────────────────────┘\n";
+                        └──────────────────────────────────────────────────────────────────────┘";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let boxed_content = Box::new(String::from(message)).alignment(Alignment::Left);
+        let boxed_content = BoxBuilder::new(String::from(message)).alignment(Alignment::Left);
         assert_eq!(expected, boxed_content.to_string());
     }
 
@@ -270,9 +270,47 @@ mod tests {
                         │                                        consectetur adipiscing elit,  │\n\
                         │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
                         │                                                                      │\n\
-                        └──────────────────────────────────────────────────────────────────────┘\n";
+                        └──────────────────────────────────────────────────────────────────────┘";
         let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let boxed_content = Box::new(String::from(message)).alignment(Alignment::Right);
+        let boxed_content = BoxBuilder::new(String::from(message)).alignment(Alignment::Right);
+        assert_eq!(expected, boxed_content.to_string());
+    }
+
+    #[test]
+    fn test_fmt() {
+        let expected = "┌──────────────────────────────────────────────────────────────────────┐\n\
+                        │                                                                      │\n\
+                        │  Lorem ipsum dolor sit amet,                                         │\n\
+                        │  consectetur adipiscing elit,                                        │\n\
+                        │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+                        │                                                                      │\n\
+                        └──────────────────────────────────────────────────────────────────────┘";
+        let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        let boxed_content = BoxBuilder::new(String::from(message)).alignment(Alignment::Left);
+        assert_eq!(expected, format!("{}", boxed_content));
+    }
+
+    #[test]
+    fn empty_box() {
+        let expected = "┌────┐\n\
+                        │    │\n\
+                        │    │\n\
+                        └────┘";
+        let message = "";
+        let boxed_content = BoxBuilder::new(String::from(message));
+        assert_eq!(expected, boxed_content.to_string());
+    }
+
+    #[test]
+    fn line_wrapping() {
+        let expected = "┌──────────────────────────────────────────────────────────────────────────────┐\n\
+                        │                                                                              │\n\
+                        │  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod te  │\n\
+                        │  mpor incididunt ut labore et dolore magna aliqua.                           │\n\
+                        │                                                                              │\n\
+                        └──────────────────────────────────────────────────────────────────────────────┘";
+        let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        let boxed_content = BoxBuilder::new(String::from(message));
         assert_eq!(expected, boxed_content.to_string());
     }
 }
