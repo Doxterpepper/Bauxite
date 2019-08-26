@@ -17,6 +17,7 @@ use std::cmp::max;
 use std::fmt;
 
 mod lines;
+mod color;
 
 pub enum Alignment {
     Left,
@@ -31,6 +32,7 @@ struct Formatting {
     padding_right: Option<usize>,
     padding_top: Option<usize>,
     padding_bottom: Option<usize>,
+    color: Option<u8>,
 }
 
 pub struct BoxBuilder {
@@ -48,6 +50,7 @@ impl Formatting {
             padding_right: None,
             padding_top: None,
             padding_bottom: None,
+            color: None,
         }
     }
 }
@@ -61,6 +64,7 @@ impl BoxBuilder {
         }
     }
 
+    /// Create new boxed message from a str
     pub fn from(message: &str) -> BoxBuilder {
         BoxBuilder {
             message: String::from(message),
@@ -110,6 +114,11 @@ impl BoxBuilder {
         self
     }
 
+    pub fn color(mut self, color_code: u8) -> Self {
+        self.format.color = Some(color_code);
+        self
+    }
+
     /// BoxBuildered message to string
     pub fn to_string(&self) -> String {
         let format = &self.format;
@@ -119,18 +128,18 @@ impl BoxBuilder {
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
 
-        let normalized_message =
-            normalize_lines(&self.message, self.format.max_width, total_horizontal_pad);
+        let normalized_message = normalize_lines(&self.message, format.max_width, total_horizontal_pad);
         let max_line_length = max_line_length(&normalized_message);
 
-        let mut boxed_message = gen_top(max_line_length + right_padding + left_padding);
-        boxed_message += &gen_vertical_padding(top_padding, max_line_length + total_horizontal_pad);
+        // wrap the message in the box
+        let mut boxed_message = color_text(gen_top(max_line_length + right_padding + left_padding), format.color);
+        boxed_message += &color_text(gen_vertical_padding(top_padding, max_line_length + total_horizontal_pad), format.color);
         boxed_message += &wrap_lines(&normalized_message, &format, max_line_length);
-        boxed_message += &gen_vertical_padding(
+        boxed_message += &color_text(gen_vertical_padding(
             bottom_padding,
             max_line_length + right_padding + left_padding,
-        );
-        boxed_message += &gen_bottom(max_line_length + left_padding + right_padding);
+        ), format.color);
+        boxed_message += &color_text(gen_bottom(max_line_length + left_padding + right_padding), format.color);
         boxed_message
     }
 }
@@ -138,6 +147,14 @@ impl BoxBuilder {
 impl fmt::Display for BoxBuilder {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_fmt(format_args!("{}", self.to_string()))
+    }
+}
+
+fn color_text(text: String, color: Option<u8>) -> String{
+    if let Some(color_number) = color {
+        color::color_text(&text, color_number)
+    } else {
+        text
     }
 }
 
@@ -222,11 +239,11 @@ fn wrap_lines(message: &String, format: &Formatting, max_length: usize) -> Strin
             let right_padding = gen_right_padding(format, line.len(), &max_length);
             format!(
                 "{}{}{}{}{}\n",
-                lines::VERTICAL,
+                color_text(lines::VERTICAL.to_string(), format.color),
                 left_padding,
                 line,
                 right_padding,
-                lines::VERTICAL
+                color_text(lines::VERTICAL.to_string(), format.color)
             )
         })
         .collect::<String>()
