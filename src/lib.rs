@@ -17,6 +17,7 @@ use std::cmp::max;
 use std::fmt;
 
 mod lines;
+pub use self::lines::color::AnsiColorCode;
 
 pub enum Alignment {
     Left,
@@ -121,6 +122,11 @@ impl BoxBuilder {
 
     pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
         self.lines = self.lines.color_rgb(red, green, blue);
+        self
+    }
+
+    pub fn color_ansi_code(mut self, code: AnsiColorCode) -> Self {
+        self.lines = self.lines.color_code(code);
         self
     }
 

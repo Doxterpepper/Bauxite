@@ -47,6 +47,17 @@ impl Lines {
         self.bottom_right = color::color_rgb(self.bottom_right.clone(), red, green, blue);
         self
     }
+
+    pub fn color_code(mut self, code: color::AnsiColorCode) -> Self {
+        self.horizontal = color::color_code(self.horizontal.clone(), &code);
+        self.vertical = color::color_code(self.vertical.clone(), &code);
+        self.top_right = color::color_code(self.top_right.clone(), &code);
+        self.top_left = color::color_code(self.top_left.clone(), &code);
+        self.bottom_left = color::color_code(self.bottom_left.clone(), &code);
+        self.bottom_right = color::color_code(self.bottom_right.clone(), &code);
+        self
+
+    }
 }
 
 #[cfg(test)]
