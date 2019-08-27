@@ -31,7 +31,6 @@ struct Formatting {
     padding_right: Option<usize>,
     padding_top: Option<usize>,
     padding_bottom: Option<usize>,
-    color: Option<u8>,
 }
 
 pub struct BoxBuilder {
@@ -50,7 +49,6 @@ impl Formatting {
             padding_right: None,
             padding_top: None,
             padding_bottom: None,
-            color: None,
         }
     }
 }
@@ -121,10 +119,14 @@ impl BoxBuilder {
         self
     }
 
+    pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
+        self.lines = self.lines.color_rgb(red, green, blue);
+        self
+    }
+
     /// BoxBuildered message to string
     pub fn to_string(&self) -> String {
         let format = &self.format;
-        let bottom_padding = format.padding_bottom.unwrap_or(format.padding / 2);
         let right_padding = format.padding_right.unwrap_or(format.padding);
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;

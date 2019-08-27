@@ -1,4 +1,4 @@
-mod color;
+pub mod color;
 
 pub const VERTICAL: &'static str = "│";
 pub const HORIZONTAL: &'static str = "─";
@@ -29,12 +29,22 @@ impl Lines {
     }
 
     pub fn color_8(mut self, color: u8) -> Self {
-        self.horizontal = color::color_text(self.horizontal.clone(), color);
-        self.vertical = color::color_text(self.vertical.clone(), color);
-        self.top_right = color::color_text(self.top_right.clone(), color);
-        self.top_left = color::color_text(self.top_left.clone(), color);
-        self.bottom_left = color::color_text(self.bottom_left.clone(), color);
-        self.bottom_right = color::color_text(self.bottom_right.clone(), color);
+        self.horizontal = color::color_8(self.horizontal.clone(), color);
+        self.vertical = color::color_8(self.vertical.clone(), color);
+        self.top_right = color::color_8(self.top_right.clone(), color);
+        self.top_left = color::color_8(self.top_left.clone(), color);
+        self.bottom_left = color::color_8(self.bottom_left.clone(), color);
+        self.bottom_right = color::color_8(self.bottom_right.clone(), color);
+        self
+    }
+
+    pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
+        self.horizontal = color::color_rgb(self.horizontal.clone(), red, green, blue);
+        self.vertical = color::color_rgb(self.vertical.clone(), red, green, blue);
+        self.top_right = color::color_rgb(self.top_right.clone(), red, green, blue);
+        self.top_left = color::color_rgb(self.top_left.clone(), red, green, blue);
+        self.bottom_left = color::color_rgb(self.bottom_left.clone(), red, green, blue);
+        self.bottom_right = color::color_rgb(self.bottom_right.clone(), red, green, blue);
         self
     }
 }
