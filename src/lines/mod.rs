@@ -65,7 +65,6 @@ impl Lines {
         self.bottom_left = color::color_code(self.bottom_left.clone(), &code);
         self.bottom_right = color::color_code(self.bottom_right.clone(), &code);
         self
-
     }
 }
 

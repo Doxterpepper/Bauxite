@@ -144,7 +144,8 @@ impl BoxBuilder {
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
 
-        let normalized_message = normalize_lines(&self.message, format.max_width, total_horizontal_pad);
+        let normalized_message =
+            normalize_lines(&self.message, format.max_width, total_horizontal_pad);
         let max_line_length = max_line_length(&normalized_message);
 
         // wrap the message in the box
@@ -158,14 +159,24 @@ impl BoxBuilder {
 
     /// Helper function to build the top of the box
     fn gen_top(&self, length: usize) -> String {
-        let vertical_line = (0..length).map(|_| self.lines.horizontal.clone()).collect::<String>();
-        format!("{}{}{}\n", self.lines.top_left, vertical_line, self.lines.top_right)
+        let vertical_line = (0..length)
+            .map(|_| self.lines.horizontal.clone())
+            .collect::<String>();
+        format!(
+            "{}{}{}\n",
+            self.lines.top_left, vertical_line, self.lines.top_right
+        )
     }
 
     /// Helper function to build the bottom of the box
     fn gen_bottom(&self, length: usize) -> String {
-        let vertical_line = (0..length).map(|_| self.lines.horizontal.clone()).collect::<String>();
-        format!("{}{}{}", self.lines.bottom_left, vertical_line, self.lines.bottom_right)
+        let vertical_line = (0..length)
+            .map(|_| self.lines.horizontal.clone())
+            .collect::<String>();
+        format!(
+            "{}{}{}",
+            self.lines.bottom_left, vertical_line, self.lines.bottom_right
+        )
     }
 
     /// Wrap the message with the box on it's left and right
@@ -177,11 +188,7 @@ impl BoxBuilder {
                 let right_padding = self.gen_right_padding(line.len(), &max_length);
                 format!(
                     "{}{}{}{}{}\n",
-                    self.lines.vertical,
-                    left_padding,
-                    line,
-                    right_padding,
-                    self.lines.vertical
+                    self.lines.vertical, left_padding, line, right_padding, self.lines.vertical
                 )
             })
             .collect::<String>()
@@ -206,9 +213,9 @@ impl BoxBuilder {
     }
 
     /// Helper function to to_string top and bottom padding of the box
-    fn gen_top_padding(&self,length: usize) -> String {
+    fn gen_top_padding(&self, length: usize) -> String {
         let top_padding = self.format.padding_top.unwrap_or(self.format.padding / 2);
-        (0..top_padding )
+        (0..top_padding)
             .map(|_| {
                 format!(
                     "{}{}{}\n",
@@ -219,11 +226,14 @@ impl BoxBuilder {
             })
             .collect::<String>()
     }
-    
+
     /// Helper function to to_string top and bottom padding of the box
-    fn gen_bottom_padding(&self,length: usize) -> String {
-        let bottom_padding = self.format.padding_bottom.unwrap_or(self.format.padding / 2);
-        (0..bottom_padding )
+    fn gen_bottom_padding(&self, length: usize) -> String {
+        let bottom_padding = self
+            .format
+            .padding_bottom
+            .unwrap_or(self.format.padding / 2);
+        (0..bottom_padding)
             .map(|_| {
                 format!(
                     "{}{}{}\n",
