@@ -115,22 +115,29 @@ impl BoxBuilder {
         self
     }
 
+    /// Sets 8 bit color code.
+    /// 0-7 are standard colors
+    /// 8-15 are high intensity colors
+    /// 16-231 are defined by 16 + 36 x r + 6 x g + b (0 <= r, g, b <= 5)
+    /// 232-255 are grayscale from black to white in 24 steps
     pub fn color_8(mut self, color: u8) -> Self {
         self.lines = self.lines.color_8(color);
         self
     }
 
+    /// Basic RGB colors.
     pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
         self.lines = self.lines.color_rgb(red, green, blue);
         self
     }
 
-    pub fn color_ansi_code(mut self, code: AnsiColorCode) -> Self {
+    /// Simplest ANSI color codes defind by AnsiColorCode enumerated type.
+    pub fn color(mut self, code: AnsiColorCode) -> Self {
         self.lines = self.lines.color_code(code);
         self
     }
 
-    /// BoxBuildered message to string
+    /// Boxed message to string
     pub fn to_string(&self) -> String {
         let format = &self.format;
         let right_padding = format.padding_right.unwrap_or(format.padding);
@@ -155,6 +162,7 @@ impl BoxBuilder {
         format!("{}{}{}\n", self.lines.top_left, vertical_line, self.lines.top_right)
     }
 
+    /// Helper function to build the bottom of the box
     fn gen_bottom(&self, length: usize) -> String {
         let vertical_line = (0..length).map(|_| self.lines.horizontal.clone()).collect::<String>();
         format!("{}{}{}", self.lines.bottom_left, vertical_line, self.lines.bottom_right)

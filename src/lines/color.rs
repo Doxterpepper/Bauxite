@@ -1,5 +1,6 @@
 const RESET_CODE: &'static str = "\x1B[0m";
 
+/// Simple ANSI predefined codes
 pub enum AnsiColorCode {
     Black,
     Red,
