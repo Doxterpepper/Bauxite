@@ -17,41 +17,17 @@ use std::cmp::max;
 use std::fmt;
 
 mod lines;
+mod formatting;
+
+use self::formatting::Formatting;
+
+pub use self::formatting::Alignment;
 pub use self::lines::color::AnsiColorCode;
-
-pub enum Alignment {
-    Left,
-    Right,
-}
-
-struct Formatting {
-    padding: usize,
-    alignment: Alignment,
-    max_width: usize,
-    padding_left: Option<usize>,
-    padding_right: Option<usize>,
-    padding_top: Option<usize>,
-    padding_bottom: Option<usize>,
-}
 
 pub struct BoxBuilder {
     message: String,
     format: Formatting,
     lines: lines::Lines,
-}
-
-impl Formatting {
-    pub fn new() -> Formatting {
-        Formatting {
-            padding: 2,
-            alignment: Alignment::Left,
-            max_width: 80,
-            padding_left: None,
-            padding_right: None,
-            padding_top: None,
-            padding_bottom: None,
-        }
-    }
 }
 
 impl BoxBuilder {
