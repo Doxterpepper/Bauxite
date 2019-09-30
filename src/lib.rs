@@ -1,61 +1,45 @@
-//! Wrap terminal output with boxes
+//! Bauxite is a library for wrapping strings in line boxes.
+//! ```
+//!
+//! "┌──────────────────────────────────────────────────────────────────────────┐
+//!  │                                                                          │
+//!  │  Only those who leisurely approach that which the masses are busy about  │
+//!  │  can be busy about that which the masses take leisurely.                 │
+//!  │  -- Lao Tsu                                                              │
+//!  │                                                                          │
+//!  └──────────────────────────────────────────────────────────────────────────┘";
+//!
+//! ```
 //! # Example
 //! ```
 //! let lorem_ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-//! eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-//! nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-//! dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-//! Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-//! id est laborum.";
+//! eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 //!
 //! let boxed_message = bauxite::BoxBuilder::from(lorem_ipsum).padding(3)
 //!     .alignment(bauxite::Alignment::Left);
 //! println!("{}", boxed_message);
 //! ```
 
-use std::cmp::max;
 use std::fmt;
 
+mod formatting;
+mod helper;
 mod lines;
+
+use self::formatting::Formatting;
+
+pub use self::formatting::Alignment;
 pub use self::lines::color::AnsiColorCode;
 
-pub enum Alignment {
-    Left,
-    Right,
-}
-
-struct Formatting {
-    padding: usize,
-    alignment: Alignment,
-    max_width: usize,
-    padding_left: Option<usize>,
-    padding_right: Option<usize>,
-    padding_top: Option<usize>,
-    padding_bottom: Option<usize>,
-}
-
+/// Box builder struct that represents your formatted line box.
 pub struct BoxBuilder {
     message: String,
     format: Formatting,
     lines: lines::Lines,
 }
 
-impl Formatting {
-    pub fn new() -> Formatting {
-        Formatting {
-            padding: 2,
-            alignment: Alignment::Left,
-            max_width: 80,
-            padding_left: None,
-            padding_right: None,
-            padding_top: None,
-            padding_bottom: None,
-        }
-    }
-}
-
 impl BoxBuilder {
-    /// Create a new boxed message
+    /// Create a new boxed message from a String
     pub fn new(message: String) -> BoxBuilder {
         BoxBuilder {
             message: message,
@@ -116,6 +100,7 @@ impl BoxBuilder {
     }
 
     /// Sets 8 bit color code.
+    ///
     /// 0-7 are standard colors
     /// 8-15 are high intensity colors
     /// 16-231 are defined by 16 + 36 x r + 6 x g + b (0 <= r, g, b <= 5)
@@ -137,7 +122,8 @@ impl BoxBuilder {
         self
     }
 
-    /// Boxed message to string
+    /// Boxed message to string.
+    /// Returns the full line boxed message
     pub fn to_string(&self) -> String {
         let format = &self.format;
         let right_padding = format.padding_right.unwrap_or(format.padding);
@@ -145,8 +131,8 @@ impl BoxBuilder {
         let total_horizontal_pad = right_padding + left_padding;
 
         let normalized_message =
-            normalize_lines(&self.message, format.max_width, total_horizontal_pad);
-        let max_line_length = max_line_length(&normalized_message);
+            helper::normalize_lines(&self.message, format.max_width, total_horizontal_pad);
+        let max_line_length = helper::max_line_length(&normalized_message);
 
         // wrap the message in the box
         let mut boxed_message = self.gen_top(max_line_length + right_padding + left_padding);
@@ -200,7 +186,7 @@ impl BoxBuilder {
             Alignment::Left => self.format.padding,
             Alignment::Right => self.format.padding + max_length - line_length,
         };
-        gen_whitespace(padding)
+        helper::gen_whitespace(padding)
     }
 
     /// Helper function to to_string padding right of the content
@@ -209,7 +195,7 @@ impl BoxBuilder {
             Alignment::Right => self.format.padding,
             Alignment::Left => self.format.padding + max_length - line_length,
         };
-        gen_whitespace(padding)
+        helper::gen_whitespace(padding)
     }
 
     /// Helper function to to_string top and bottom padding of the box
@@ -220,7 +206,7 @@ impl BoxBuilder {
                 format!(
                     "{}{}{}\n",
                     self.lines.vertical,
-                    gen_whitespace(length),
+                    helper::gen_whitespace(length),
                     self.lines.vertical
                 )
             })
@@ -238,7 +224,7 @@ impl BoxBuilder {
                 format!(
                     "{}{}{}\n",
                     self.lines.vertical,
-                    gen_whitespace(length),
+                    helper::gen_whitespace(length),
                     self.lines.vertical
                 )
             })
@@ -246,61 +232,16 @@ impl BoxBuilder {
     }
 }
 
+/// Implement fmt for BoxBuilder so we can use pass a BoxBuilder to `println!` for printing
 impl fmt::Display for BoxBuilder {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_fmt(format_args!("{}", self.to_string()))
     }
 }
 
-fn normalize_lines(message: &String, max_width: usize, padding: usize) -> String {
-    let mut normalized_message = String::new();
-    let mut message_lines = message.lines();
-    let mut current = message_lines.next();
-
-    while let Some(line) = current {
-        if line.len() > max_width {
-            let (line1, line2) = line.split_at(max_width - padding - 2);
-            normalized_message += line1;
-            normalized_message += "\n";
-            current = Some(line2);
-        } else {
-            normalized_message += line;
-            normalized_message += "\n";
-            current = message_lines.next();
-        }
-    }
-
-    // Bauxite doesn't handle the tab character very well so
-    // replace all tab characters with a single space.
-    normalized_message.replace("\t", " ")
-}
-
-/// Helper function to get the length of the longest line
-fn max_line_length(message: &String) -> usize {
-    let mut max_length = 0;
-    for line in message.lines() {
-        max_length = max(max_length, line.len())
-    }
-    max_length
-}
-
-/// Helper function to to_string whitespace for padding
-fn gen_whitespace(num: usize) -> String {
-    (0..num).map(|_| " ").collect::<String>()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_nomralize_lines() {
-        let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-        let expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tem\npor incididunt ut labore et dolore magna aliqua.\n";
-
-        let normalized = normalize_lines(&String::from(message), 80, 3);
-        assert_eq!(expected, normalized);
-    }
 
     #[test]
     fn test_basic_box() {
