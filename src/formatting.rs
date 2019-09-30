@@ -1,4 +1,4 @@
-
+/// Sets text alignment inside the line box to the left or right.
 pub enum Alignment {
     Left,
     Right,
