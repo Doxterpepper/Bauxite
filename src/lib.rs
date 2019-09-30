@@ -369,12 +369,13 @@ mod tests {
 
     #[test]
     fn line_wrapping() {
-        let expected = "┌──────────────────────────────────────────────────────────────────────────────┐\n\
-                        │                                                                              │\n\
-                        │  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod te  │\n\
-                        │  mpor incididunt ut labore et dolore magna aliqua.                           │\n\
-                        │                                                                              │\n\
-                        └──────────────────────────────────────────────────────────────────────────────┘";
+        let expected =
+            "┌──────────────────────────────────────────────────────────────────────────────┐\n\
+             │                                                                              │\n\
+             │  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod te  │\n\
+             │  mpor incididunt ut labore et dolore magna aliqua.                           │\n\
+             │                                                                              │\n\
+             └──────────────────────────────────────────────────────────────────────────────┘";
         let message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
         let boxed_content = BoxBuilder::new(String::from(message));
         assert_eq!(expected, boxed_content.to_string());
