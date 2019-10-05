@@ -20,4 +20,4 @@ fn main() {
     println!("{}", bauxite::BoxBuilder::from(my_message);
 }
 ```
-![alt text](https://github.com/Doxterpepper/Bauxite/blob/readme/Screenshot.png "Boxed message")
+![alt text](https://github.com/Doxterpepper/Bauxite/blob/master/Screenshot.png "Boxed message")
