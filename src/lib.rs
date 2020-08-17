@@ -32,7 +32,6 @@ use self::formatting::Formatting;
 pub use self::formatting::Alignment;
 pub use color::ansi_color_codes::AnsiColorCode;
 pub use color::rgb_color::RgbColor;
-use color::LineColor;
 pub use lines::line_type::LineType;
 
 /// Box builder struct that represents your formatted line box.
@@ -50,11 +49,7 @@ impl BoxBuilder {
             message: message,
             format: Formatting::new(),
             lines: lines::Lines::new(),
-            color: color::LineColor {
-                ansi: None,
-                rgb: None,
-                color8: None,
-            },
+            color: color::LineColor::new(),
         }
     }
 

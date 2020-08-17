@@ -2,6 +2,7 @@ pub mod line_type;
 
 use line_type::LineType;
 
+/// Map a LineType value to the appropriate type of lines that should ultimatly be displayed.
 pub fn resolve_line_type(line_type: line_type::LineType) -> Lines {
     match line_type {
         LineType::Dotted => Lines {

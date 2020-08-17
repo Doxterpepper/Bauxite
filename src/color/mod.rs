@@ -123,5 +123,6 @@ mod tests {
             "\x1B[38;2;{};{};{}m{}{}",
             100, 101, 102, message, RESET_CODE
         );
+        assert_eq!(wrapped_message, expected_message);
     }
 }
