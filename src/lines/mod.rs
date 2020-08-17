@@ -1,5 +1,7 @@
 pub mod color;
+pub mod line_type;
 
+// Basic
 pub const VERTICAL: &'static str = "│";
 pub const HORIZONTAL: &'static str = "─";
 pub const TOP_LEFT: &'static str = "┌";
@@ -7,7 +9,17 @@ pub const TOP_RIGHT: &'static str = "┐";
 pub const BOTTOM_LEFT: &'static str = "└";
 pub const BOTTOM_RIGHT: &'static str = "┘";
 
-/// Represents each customized line character for box building
+fn resolve_line_type(line_type: line_type::LineType) -> Lines {
+    Lines {
+        horizontal: HORIZONTAL.to_string(),
+        vertical: VERTICAL.to_string(),
+        top_right: TOP_RIGHT.to_string(),
+        top_left: TOP_LEFT.to_string(),
+        bottom_right: BOTTOM_RIGHT.to_string(),
+        bottom_left: BOTTOM_LEFT.to_string(),
+    }
+}
+
 pub struct Lines {
     pub horizontal: String,
     pub vertical: String,

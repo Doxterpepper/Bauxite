@@ -1,5 +1,11 @@
 const RESET_CODE: &'static str = "\x1B[0m";
 
+pub struct RgbColor {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
+}
+
 /// Simple ANSI predefined codes
 pub enum AnsiColorCode {
     Black,
@@ -18,6 +24,12 @@ pub enum AnsiColorCode {
     BrightMagenta,
     BrightCyan,
     BrightWhite,
+}
+
+pub struct LineColor {
+    pub ansi: Option<AnsiColorCode>,
+    pub rgb: Option<RgbColor>,
+    pub color8: Option<u8>,
 }
 
 pub fn color_8(text: String, color: u8) -> String {

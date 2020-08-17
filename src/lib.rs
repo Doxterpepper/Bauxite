@@ -30,12 +30,14 @@ use self::formatting::Formatting;
 
 pub use self::formatting::Alignment;
 pub use self::lines::color::AnsiColorCode;
+pub use self::lines::color::LineColor;
 
 /// Box builder struct that represents your formatted line box.
 pub struct BoxBuilder {
     message: String,
     format: Formatting,
     lines: lines::Lines,
+    color: lines::color::LineColor,
 }
 
 impl BoxBuilder {
@@ -45,6 +47,11 @@ impl BoxBuilder {
             message: message,
             format: Formatting::new(),
             lines: lines::Lines::new(),
+            color: lines::color::LineColor {
+                ansi: None,
+                rgb: None,
+                color8: None,
+            },
         }
     }
 
@@ -54,6 +61,11 @@ impl BoxBuilder {
             message: String::from(message),
             format: Formatting::new(),
             lines: lines::Lines::new(),
+            color: lines::color::LineColor {
+                ansi: None,
+                rgb: None,
+                color8: None,
+            },
         }
     }
 
@@ -106,19 +118,29 @@ impl BoxBuilder {
     /// 16-231 are defined by 16 + 36 x r + 6 x g + b (0 <= r, g, b <= 5)
     /// 232-255 are grayscale from black to white in 24 steps
     pub fn color_8(mut self, color: u8) -> Self {
-        self.lines = self.lines.color_8(color);
+        self.color.rgb = None;
+        self.color.ansi = None;
+        self.color.color8 = Some(color);
         self
     }
 
     /// Basic RGB colors.
     pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
-        self.lines = self.lines.color_rgb(red, green, blue);
+        self.color.ansi = None;
+        self.color.color8 = None;
+        self.color.rgb = Some(lines::color::RgbColor {
+            red: red,
+            green: green,
+            blue: blue,
+        });
         self
     }
 
     /// Simplest ANSI color codes defind by AnsiColorCode enumerated type.
     pub fn color(mut self, code: AnsiColorCode) -> Self {
-        self.lines = self.lines.color_code(code);
+        self.color.rgb = None;
+        self.color.color8 = None;
+        self.color.ansi = Some(code);
         self
     }
 
@@ -141,6 +163,12 @@ impl BoxBuilder {
         boxed_message += &self.gen_bottom_padding(max_line_length + right_padding + left_padding);
         boxed_message += &self.gen_bottom(max_line_length + left_padding + right_padding);
         boxed_message
+    }
+
+    fn wrap_color(&self, message: String) -> String {
+        if let Some(rgb) = self.color.rgb {
+            
+        }
     }
 
     /// Helper function to build the top of the box
