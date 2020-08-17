@@ -30,8 +30,7 @@ impl LineColor {
             self.color_code(text, &ansi)
         } else if let Some(rgb) = &self.rgb {
             self.color_rgb(text, rgb)
-        }
-        else if let Some(color8) = &self.color8 {
+        } else if let Some(color8) = &self.color8 {
             self.color_8(text, color8)
         } else {
             text

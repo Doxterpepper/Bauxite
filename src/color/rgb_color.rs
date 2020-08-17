@@ -1,4 +1,3 @@
-
 /// Defines RGB color for the box.
 pub struct RgbColor {
     pub red: u8,

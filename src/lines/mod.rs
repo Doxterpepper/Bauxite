@@ -36,7 +36,7 @@ pub fn resolve_line_type(line_type: line_type::LineType) -> Lines {
             top_left: String::from("┌"),
             bottom_right: String::from("┘"),
             bottom_left: String::from("└"),
-        }
+        },
     }
 }
 

@@ -1,4 +1,3 @@
-
 /// Simple ANSI predefined codes
 pub enum AnsiColorCode {
     Black,

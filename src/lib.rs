@@ -22,10 +22,10 @@
 
 use std::fmt;
 
+mod color;
 mod formatting;
 mod helper;
 mod lines;
-mod color;
 
 use self::formatting::Formatting;
 
