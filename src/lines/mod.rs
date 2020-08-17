@@ -1,4 +1,3 @@
-pub mod color;
 pub mod line_type;
 
 // Basic
@@ -41,45 +40,9 @@ impl Lines {
             bottom_left: BOTTOM_LEFT.to_string(),
         }
     }
-
-    /// Sets 8 bit color code.
-    /// 0-7 are standard colors
-    /// 8-15 are high intensity colors
-    /// 16-231 are defined by 16 + 36 x r + 6 x g + b (0 <= r, g, b <= 5)
-    /// 232-255 are grayscale from black to white in 24 steps
-    pub fn color_8(mut self, color: u8) -> Self {
-        self.horizontal = color::color_8(self.horizontal.clone(), color);
-        self.vertical = color::color_8(self.vertical.clone(), color);
-        self.top_right = color::color_8(self.top_right.clone(), color);
-        self.top_left = color::color_8(self.top_left.clone(), color);
-        self.bottom_left = color::color_8(self.bottom_left.clone(), color);
-        self.bottom_right = color::color_8(self.bottom_right.clone(), color);
-        self
-    }
-
-    /// Basic RGB colors.
-    pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
-        self.horizontal = color::color_rgb(self.horizontal.clone(), red, green, blue);
-        self.vertical = color::color_rgb(self.vertical.clone(), red, green, blue);
-        self.top_right = color::color_rgb(self.top_right.clone(), red, green, blue);
-        self.top_left = color::color_rgb(self.top_left.clone(), red, green, blue);
-        self.bottom_left = color::color_rgb(self.bottom_left.clone(), red, green, blue);
-        self.bottom_right = color::color_rgb(self.bottom_right.clone(), red, green, blue);
-        self
-    }
-
-    /// Simplest ANSI color codes defind by AnsiColorCode enumerated type.
-    pub fn color_code(mut self, code: color::AnsiColorCode) -> Self {
-        self.horizontal = color::color_code(self.horizontal.clone(), &code);
-        self.vertical = color::color_code(self.vertical.clone(), &code);
-        self.top_right = color::color_code(self.top_right.clone(), &code);
-        self.top_left = color::color_code(self.top_left.clone(), &code);
-        self.bottom_left = color::color_code(self.bottom_left.clone(), &code);
-        self.bottom_right = color::color_code(self.bottom_right.clone(), &code);
-        self
-    }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -122,3 +85,4 @@ mod tests {
         assert_eq!(lines.bottom_right, bottom_right);
     }
 }
+*/

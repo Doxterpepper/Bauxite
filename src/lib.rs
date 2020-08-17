@@ -25,19 +25,21 @@ use std::fmt;
 mod formatting;
 mod helper;
 mod lines;
+mod color;
 
 use self::formatting::Formatting;
 
 pub use self::formatting::Alignment;
-pub use self::lines::color::AnsiColorCode;
-pub use self::lines::color::LineColor;
+pub use color::ansi_color_codes::AnsiColorCode;
+pub use color::rgb_color::RgbColor;
+pub use color::LineColor;
 
 /// Box builder struct that represents your formatted line box.
 pub struct BoxBuilder {
     message: String,
     format: Formatting,
     lines: lines::Lines,
-    color: lines::color::LineColor,
+    color: color::LineColor,
 }
 
 impl BoxBuilder {
@@ -47,7 +49,7 @@ impl BoxBuilder {
             message: message,
             format: Formatting::new(),
             lines: lines::Lines::new(),
-            color: lines::color::LineColor {
+            color: color::LineColor {
                 ansi: None,
                 rgb: None,
                 color8: None,
@@ -61,7 +63,7 @@ impl BoxBuilder {
             message: String::from(message),
             format: Formatting::new(),
             lines: lines::Lines::new(),
-            color: lines::color::LineColor {
+            color: color::LineColor {
                 ansi: None,
                 rgb: None,
                 color8: None,
@@ -128,7 +130,7 @@ impl BoxBuilder {
     pub fn color_rgb(mut self, red: u8, green: u8, blue: u8) -> Self {
         self.color.ansi = None;
         self.color.color8 = None;
-        self.color.rgb = Some(lines::color::RgbColor {
+        self.color.rgb = Some(RgbColor {
             red: red,
             green: green,
             blue: blue,
@@ -165,21 +167,15 @@ impl BoxBuilder {
         boxed_message
     }
 
-    fn wrap_color(&self, message: String) -> String {
-        if let Some(rgb) = self.color.rgb {
-            
-        }
-    }
-
     /// Helper function to build the top of the box
     fn gen_top(&self, length: usize) -> String {
         let vertical_line = (0..length)
             .map(|_| self.lines.horizontal.clone())
             .collect::<String>();
-        format!(
+        self.color.wrap_color(format!(
             "{}{}{}\n",
             self.lines.top_left, vertical_line, self.lines.top_right
-        )
+        ))
     }
 
     /// Helper function to build the bottom of the box
@@ -187,10 +183,10 @@ impl BoxBuilder {
         let vertical_line = (0..length)
             .map(|_| self.lines.horizontal.clone())
             .collect::<String>();
-        format!(
+        self.color.wrap_color(format!(
             "{}{}{}",
             self.lines.bottom_left, vertical_line, self.lines.bottom_right
-        )
+        ))
     }
 
     /// Wrap the message with the box on it's left and right
@@ -200,10 +196,10 @@ impl BoxBuilder {
             .map(|line| {
                 let left_padding = self.gen_left_padding(line.len(), &max_length);
                 let right_padding = self.gen_right_padding(line.len(), &max_length);
-                format!(
+                self.color.wrap_color(format!(
                     "{}{}{}{}{}\n",
                     self.lines.vertical, left_padding, line, right_padding, self.lines.vertical
-                )
+                ))
             })
             .collect::<String>()
     }
