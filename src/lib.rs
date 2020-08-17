@@ -33,6 +33,7 @@ pub use self::formatting::Alignment;
 pub use color::ansi_color_codes::AnsiColorCode;
 pub use color::rgb_color::RgbColor;
 pub use color::LineColor;
+pub use lines::line_type::LineType;
 
 /// Box builder struct that represents your formatted line box.
 pub struct BoxBuilder {
@@ -110,6 +111,12 @@ impl BoxBuilder {
     /// Set the padding on the right, overrides the global right padding
     pub fn padding_right(mut self, pad: usize) -> Self {
         self.format.padding_right = Some(pad);
+        self
+    }
+
+    /// Set the type of lines to draw using [LineType](enum.LineType.html)
+    pub fn line_type(mut self, line_type: LineType) -> Self {
+        self.lines = lines::resolve_line_type(line_type);
         self
     }
 
