@@ -32,7 +32,7 @@ use self::formatting::Formatting;
 pub use self::formatting::Alignment;
 pub use color::ansi_color_codes::AnsiColorCode;
 pub use color::rgb_color::RgbColor;
-pub use color::LineColor;
+use color::LineColor;
 pub use lines::line_type::LineType;
 
 /// Box builder struct that represents your formatted line box.

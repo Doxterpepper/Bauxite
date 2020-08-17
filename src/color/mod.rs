@@ -6,6 +6,8 @@ use rgb_color::RgbColor;
 
 const RESET_CODE: &'static str = "\x1B[0m";
 
+/// Stores the line color information for the box.
+/// Only one line color type should have a value at a time.
 pub struct LineColor {
     pub ansi: Option<AnsiColorCode>,
     pub rgb: Option<RgbColor>,
@@ -13,6 +15,7 @@ pub struct LineColor {
 }
 
 impl LineColor {
+    /// Constructs a line color struct with no values for each color.
     pub fn new() -> LineColor {
         LineColor {
             ansi: None,
@@ -21,6 +24,7 @@ impl LineColor {
         }
     }
 
+    /// Wraps the given text in the color specified by the LineColor struct.
     pub fn wrap_color(&self, text: String) -> String {
         if let Some(ansi) = &self.ansi {
             self.color_code(text, &ansi)
