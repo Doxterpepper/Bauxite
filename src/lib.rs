@@ -1,3 +1,4 @@
+#![crate_name = "bauxite"]
 //! Bauxite is a library for wrapping strings in line boxes.
 //! ```
 //!
@@ -34,7 +35,7 @@ pub use color::ansi_color_codes::AnsiColorCode;
 pub use color::rgb_color::RgbColor;
 pub use lines::line_type::LineType;
 
-/// Box builder struct that represents your formatted line box.
+/// Build a line box around a given string and configure formatting of the box and string.
 pub struct BoxBuilder {
     message: String,
     format: Formatting,
@@ -43,7 +44,22 @@ pub struct BoxBuilder {
 }
 
 impl BoxBuilder {
-    /// Create a new boxed message from a String
+    /// Create a new boxed message from a [`String`](https://doc.rust-lang.org/std/string/struct.String.html)
+    /// # Examples
+    /// ```
+    /// use bauxite::BoxBuilder;
+    ///
+    /// let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    /// let boxed_content = BoxBuilder::new(String::from(message)).to_string();
+    /// assert_eq!(boxed_content,
+    /// "┌──────────────────────────────────────────────────────────────────────┐\n\
+    ///  │                                                                      │\n\
+    ///  │  Lorem ipsum dolor sit amet,                                         │\n\
+    ///  │  consectetur adipiscing elit,                                        │\n\
+    ///  │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+    ///  │                                                                      │\n\
+    ///  └──────────────────────────────────────────────────────────────────────┘");
+    /// ```
     pub fn new(message: String) -> BoxBuilder {
         BoxBuilder {
             message: message,
@@ -53,7 +69,21 @@ impl BoxBuilder {
         }
     }
 
-    /// Create new boxed message from a str
+    /// # Examples
+    /// ```
+    /// use bauxite::BoxBuilder;
+    ///
+    /// let message = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    /// let boxed_content = BoxBuilder::from(message).to_string();
+    /// assert_eq!(boxed_content,
+    /// "┌──────────────────────────────────────────────────────────────────────┐\n\
+    ///  │                                                                      │\n\
+    ///  │  Lorem ipsum dolor sit amet,                                         │\n\
+    ///  │  consectetur adipiscing elit,                                        │\n\
+    ///  │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+    ///  │                                                                      │\n\
+    ///  └──────────────────────────────────────────────────────────────────────┘");
+    /// ```
     pub fn from(message: &str) -> BoxBuilder {
         BoxBuilder {
             message: String::from(message),
@@ -67,19 +97,83 @@ impl BoxBuilder {
         }
     }
 
-    /// Set the global padding on the box
+    /// Set the padding on the box on all four sides.
+    /// # Examples
+    /// ```
+    /// use bauxite::BoxBuilder;
+    /// let boxed_message = BoxBuilder::from("This is my message").padding(5);
+    ///
+    /// assert_eq!(boxed_message.to_string(), 
+    /// "┌────────────────────────────┐\n\
+    ///  │                            │\n\
+    ///  │                            │\n\
+    ///  │     This is my message     │\n\
+    ///  │                            │\n\
+    ///  │                            │\n\
+    ///  └────────────────────────────┘");
+    /// ```
+    ///
     pub fn padding(mut self, pad: usize) -> Self {
         self.format.padding = pad;
         self
     }
 
-    /// Set the alignment of the content
+    /// Set the alignment of the content inside the box.
+    /// # Alignments
+    /// - [Align Left](enum.Alignment.html#variant.Left)
+    /// - [Align Right](enum.Alignment.html#variant.Right)
+    /// # Examples
+    /// ```
+    /// use bauxite::{BoxBuilder, Alignment};
+    ///
+    /// let message = "Lorem ipsum dolor sit amet,\n\
+    ///                consectetur adipiscing elit,\n\
+    ///                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    ///
+    /// let boxed_message = BoxBuilder::from(message).alignment(Alignment::Left);
+    ///
+    /// assert_eq!(boxed_message.to_string(), 
+    /// "┌──────────────────────────────────────────────────────────────────────┐\n\
+    ///  │                                                                      │\n\
+    ///  │  Lorem ipsum dolor sit amet,                                         │\n\
+    ///  │  consectetur adipiscing elit,                                        │\n\
+    ///  │  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  │\n\
+    ///  │                                                                      │\n\
+    ///  └──────────────────────────────────────────────────────────────────────┘");
+    /// ```
     pub fn alignment(mut self, align: Alignment) -> Self {
         self.format.alignment = align;
         self
     }
 
-    /// Set the maximum width of the box before lines should wrap
+    /// Set the maximum width of the box before lines should wrap.
+    /// # Examples
+    /// ```
+    /// use bauxite::{BoxBuilder, Alignment};
+    ///
+    /// let message = "Lorem ipsum dolor sit amet,\n\
+    ///                consectetur adipiscing elit,\n\
+    ///                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    ///
+    /// let boxed_message = BoxBuilder::from(message).max_width(10);
+    ///
+    /// assert_eq!(boxed_message.to_string(), 
+    /// "┌───────────────┐\n\
+    ///  │               │\n\
+    ///  │  Lorem ipsum  │\n\
+    ///  │  dolor sit a  │\n\
+    ///  │  met,         │\n\
+    ///  │  consectetur  │\n\
+    ///  │  adipiscing   │\n\
+    ///  │  elit,        │\n\
+    ///  │  sed do eius  │\n\
+    ///  │  mod tempor   │\n\
+    ///  │  incididunt   │\n\
+    ///  │  ut labore e  │\n\
+    ///  │  t dolore ma  │\n\
+    ///  │  gna aliqua.  │\n\
+    ///  │               │\n\
+    ///  └───────────────┘");
     pub fn max_width(mut self, width: usize) -> Self {
         self.format.max_width = width;
         self
