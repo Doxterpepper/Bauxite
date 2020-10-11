@@ -27,6 +27,7 @@ mod color;
 mod formatting;
 mod helper;
 mod lines;
+mod message;
 
 use self::formatting::Formatting;
 
@@ -250,11 +251,10 @@ impl BoxBuilder {
         let left_padding = format.padding_left.unwrap_or(format.padding);
         let total_horizontal_pad = right_padding + left_padding;
 
-        let normalized_message =
-            helper::normalize_lines(&self.message, format.max_width, total_horizontal_pad);
+        let normalized_message = helper::normalize_lines(&self.message, format.max_width, total_horizontal_pad);
         let max_line_length = helper::max_line_length(&normalized_message);
 
-        // wrap the message in the box
+        // Do the actual box wrapping.
         let mut boxed_message = self.gen_top(max_line_length + right_padding + left_padding);
         boxed_message += &self.gen_top_padding(max_line_length + total_horizontal_pad);
         boxed_message += &self.wrap_lines(&normalized_message, max_line_length);
