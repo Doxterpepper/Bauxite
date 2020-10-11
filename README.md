@@ -6,7 +6,7 @@ Wrap a string in a box for more aesthetic output to a console
 To use Bauxite add `bauxite` as a dependency in your `Cargo.toml`.
 ```rust
 [dependencies]
-bauxite = { git = "https://github.com/Doxterpepper/Bauxite" }
+bauxite = 0.1.0
 ```
 
 Then in your source code
